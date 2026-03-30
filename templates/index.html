@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 MCQ সলভার - AI ব্যাখ্যা</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Noto Sans Bengali',sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh}
+        .wrap{max-width:920px;margin:0 auto;padding:12px}
+        .hdr{text-align:center;padding:22px 12px;color:#fff}
+        .hdr h1{font-size:1.7em;text-shadow:2px 2px 4px rgba(0,0,0,.3)}
+        .hdr p{opacity:.85;font-size:.9em;margin-top:4px}
+        .ai-status{background:rgba(255,255,255,.15);display:inline-block;padding:5px 16px;border-radius:20px;font-size:.8em;margin-top:8px}
+        .card{background:#fff;border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 8px 32px rgba(0,0,0,.1)}
+        .card h2{font-size:1.1em;color:#1a237e;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #e8eaf6}
+        .tabs{display:flex;gap:8px;margin-bottom:14px}
+        .tab{padding:8px 18px;border:2px solid #e0e0e0;background:#f5f5f5;border-radius:20px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all .3s}
+        .tab.on{background:#1a237e;color:#fff;border-color:#1a237e}
+        .tab:hover{transform:translateY(-1px)}
+        .tc{display:none}.tc.on{display:block}
+        textarea{width:100%;min-height:170px;padding:12px;border:2px solid #e0e0e0;border-radius:10px;font-family:inherit;font-size:13px;line-height:1.7;resize:vertical;transition:border .3s}
+        textarea:focus{outline:none;border-color:#1a237e;box-shadow:0 0 0 3px rgba(26,35,126,.1)}
+        .upload{border:3px dashed #c5cae9;border-radius:14px;padding:35px 12px;text-align:center;cursor:pointer;background:#f8f9ff;transition:all .3s}
+        .upload:hover{border-color:#1a237e;background:#e8eaf6}
+        .upload .ic{font-size:40px;margin-bottom:6px}
+        .upload p{color:#666;font-size:13px}
+        .upload .fn{color:#1a237e;font-weight:600;margin-top:6px;font-size:14px}
+        input[type=file]{display:none}
+        .fg{margin-bottom:12px}
+        .fg label{display:block;font-weight:600;margin-bottom:4px;font-size:13px;color:#333}
+        .fg input,.fg select{width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-family:inherit;font-size:13px;transition:border .3s}
+        .fg input:focus,.fg select:focus{outline:none;border-color:#1a237e}
+        .fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        @media(max-width:600px){.fr{grid-template-columns:1fr}}
+        .btn{padding:10px 24px;border:none;border-radius:8px;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .3s;color:#fff}
+        .btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+        .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.25)}
+        .bp{background:linear-gradient(135deg,#1a237e,#283593)}
+        .bs{background:linear-gradient(135deg,#1b5e20,#2e7d32)}
+        .bgrp{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+        .bd{padding:8px 16px;font-size:12px;border-radius:7px;border:none;font-family:inherit;font-weight:600;cursor:pointer;color:#fff;transition:all .3s}
+        .bd:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.2)}
+        .bd.pdf{background:#c62828}
+        .bd.word{background:#1565c0}
+        .bd.html{background:#e65100}
+        .prog{display:none;margin:14px 0}
+        .pbar{height:6px;background:#e0e0e0;border-radius:8px;overflow:hidden}
+        .pfill{height:100%;background:linear-gradient(90deg,#1a237e,#42a5f5);border-radius:8px;transition:width .5s;width:0}
+        .ptxt{text-align:center;margin-top:8px;color:#1a237e;font-weight:500;font-size:12.5px}
+        .rc{border:1px solid #e0e0e0;border-radius:10px;padding:15px;margin-bottom:12px;background:#fafbff;transition:box-shadow .3s}
+        .rc:hover{box-shadow:0 3px 12px rgba(0,0,0,.06)}
+        .rn{background:#1a237e;color:#fff;display:inline-block;padding:3px 12px;border-radius:14px;font-size:11.5px;font-weight:600;margin-bottom:7px}
+        .rq{font-size:13.5px;font-weight:600;margin-bottom:8px;line-height:1.7;color:#212121}
+        .ro{padding:5px 12px;margin:3px 0;border-radius:6px;font-size:12.5px}
+        .ro.ok{background:#e8f5e9;border-left:3px solid #4caf50;color:#1b5e20;font-weight:600}
+        .ra{background:#e3f2fd;padding:9px 12px;border-radius:6px;margin:9px 0;font-weight:600;color:#0d47a1;font-size:12.5px}
+        .re{background:#fff;border:1px solid #e8e8e8;padding:12px;border-radius:8px;margin-top:8px;font-size:12px;line-height:1.9}
+        .re p{margin:5px 0;text-align:justify}
+        .rs{margin-top:8px;padding-top:7px;border-top:1px dashed #ddd;font-size:11px;color:#666}
+        .alert{padding:11px 15px;border-radius:8px;margin-bottom:10px;font-size:12.5px;animation:fadeIn .3s}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+        .al-ok{background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7}
+        .al-err{background:#fce4ec;color:#b71c1c;border:1px solid #ef9a9a}
+        .al-info{background:#e3f2fd;color:#0d47a1;border:1px solid #90caf9}
+        .spin{display:inline-block;width:16px;height:16px;border:3px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:sp .8s linear infinite}
+        @keyframes sp{to{transform:rotate(360deg)}}
+        .stats{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+        .st{background:#e8eaf6;padding:6px 12px;border-radius:7px;font-size:12px}
+        .st b{color:#1a237e}
+        .ftr{text-align:center;padding:16px;color:rgba(255,255,255,.7);font-size:11.5px}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="hdr">
+        <h1>🎓 MCQ সলভার</h1>
+        <p>AI দিয়ে MCQ প্রশ্নের বিস্তারিত ব্যাখ্যা ও সমাধান</p>
+        <div class="ai-status" id="ai-stat">🤖 AI লোড হচ্ছে...</div>
+    </div>
+
+    <div id="alert-box"></div>
+
+    <!-- ইনপুট সেকশন -->
+    <div class="card" id="sec-input">
+        <h2>📝 প্রশ্ন ইনপুট</h2>
+        <div class="tabs">
+            <button class="tab on" onclick="stab('txt')">✍️ টেক্সট পেস্ট</button>
+            <button class="tab" onclick="stab('file')">📎 ফাইল আপলোড</button>
+        </div>
+
+        <div class="tc on" id="t-txt">
+            <textarea id="inp-text" placeholder="এখানে MCQ প্রশ্ন পেস্ট করুন...
+
+উদাহরণ ফরম্যাট:
+
+১। বাংলাদেশের জাতীয় ফুল কোনটি?
+(ক) গোলাপ
+(খ) শাপলা
+(গ) বেলি
+(ঘ) জুঁই
+উত্তর: (খ)
+
+২। ধানের বৈজ্ঞানিক নাম কী?
+(ক) Triticum aestivum
+(খ) Oryza sativa
+(গ) Zea mays
+(ঘ) Hordeum vulgare
+উত্তর: (খ)
+
+৩। BRRI কোন ফসল নিয়ে গবেষণা করে?
+(ক) গম
+(খ) ভুট্টা
+(গ) ধান
+(ঘ) পাট
+উত্তর: (গ)"></textarea>
+        </div>
+
+        <div class="tc" id="t-file">
+            <div class="upload" id="drop-zone" onclick="document.getElementById('f-inp').click()">
+                <div class="ic">📄</div>
+                <p>📱 ট্যাপ করে PDF বা ছবি সিলেক্ট করুন</p>
+                <p style="font-size:11px;color:#999;margin-top:4px">PDF, PNG, JPG, JPEG, WEBP সাপোর্ট</p>
+                <p class="fn" id="f-name"></p>
+            </div>
+            <input type="file" id="f-inp" accept=".pdf,.png,.jpg,.jpeg,.webp,.bmp">
+        </div>
+
+        <div class="fg" style="margin-top:12px">
+            <label>📚 বিষয় নির্বাচন (ভালো ব্যাখ্যার জন্য):</label>
+            <select id="subj">
+                <option value="">-- বিষয় বাছাই করুন --</option>
+                <option value="কৃষি">🌾 কৃষি</option>
+                <option value="উদ্ভিদবিদ্যা">🌿 উদ্ভিদবিদ্যা</option>
+                <option value="প্রাণিবিদ্যা">🐄 প্রাণিবিদ্যা</option>
+                <option value="মৃত্তিকা বিজ্ঞান">🏔️ মৃত্তিকা বিজ্ঞান</option>
+                <option value="কীটতত্ত্ব">🐛 কীটতত্ত্ব</option>
+                <option value="উদ্যানতত্ত্ব">🌺 উদ্যানতত্ত্ব</option>
+                <option value="মৎস্য বিজ্ঞান">🐟 মৎস্য বিজ্ঞান</option>
+                <option value="পশু পালন">🐓 পশু পালন</option>
+                <option value="কৃষি অর্থনীতি">💰 কৃষি অর্থনীতি</option>
+                <option value="কৃষি প্রকৌশল">⚙️ কৃষি প্রকৌশল</option>
+                <option value="রসায়ন">🧪 রসায়ন</option>
+                <option value="পদার্থবিদ্যা">⚡ পদার্থবিদ্যা</option>
+                <option value="গণিত">📐 গণিত</option>
+                <option value="জীববিজ্ঞান">🧬 জীববিজ্ঞান</option>
+                <option value="বাংলা">📖 বাংলা</option>
+                <option value="ইংরেজি">🔤 ইংরেজি</option>
+                <option value="সাধারণ জ্ঞান">🌍 সাধারণ জ্ঞান</option>
+                <option value="কম্পিউটার">💻 কম্পিউটার ও ICT</option>
+                <option value="অন্যান্য">📋 অন্যান্য</option>
+            </select>
+        </div>
+
+        <button class="btn bp" id="btn-parse" onclick="doParse()">
+            🔍 প্রশ্ন এক্সট্রাক্ট করুন
+        </button>
+  </div>
+      <!-- পরীক্ষার তথ্য সেকশন -->
+    <div class="card" id="sec-hdr" style="display:none">
+        <h2>📋 পরীক্ষার তথ্য (ঐচ্ছিক - PDF/Word হেডারে আসবে)</h2>
+        <div class="fr">
+            <div class="fg"><label>🏛️ প্রতিষ্ঠান:</label><input id="h-inst" placeholder="যেমন: বাংলাদেশ কৃষি বিশ্ববিদ্যালয়"></div>
+            <div class="fg"><label>📝 পরীক্ষা:</label><input id="h-exam" placeholder="যেমন: ভর্তি পরীক্ষা ২০২৪"></div>
+        </div>
+        <div class="fr">
+            <div class="fg"><label>📅 সাল:</label><input id="h-year" placeholder="২০২৪"></div>
+            <div class="fg"><label>💯 পূর্ণমান:</label><input id="h-marks" placeholder="১০০"></div>
+        </div>
+        <div class="fr">
+            <div class="fg"><label>⏰ সময়:</label><input id="h-time" placeholder="১ ঘণ্টা ৩০ মিনিট"></div>
+            <div class="fg"><label>➖ নেগেটিভ মার্কিং:</label><input id="h-neg" placeholder="প্রতি ভুলে ০.২৫ কাটা যাবে"></div>
+        </div>
+        <div class="fg"><label>📌 বিশেষ নির্দেশনা:</label><input id="h-inst2" placeholder="যেমন: প্রতিটি প্রশ্নের মান ১, সব প্রশ্নের উত্তর দিতে হবে"></div>
+
+        <button class="btn bs" id="btn-explain" onclick="doExplain()">
+            🤖 AI দিয়ে ব্যাখ্যা তৈরি করুন
+        </button>
+        <p style="font-size:11px;color:#888;margin-top:8px">⏱️ প্রতি প্রশ্নে ৫-১০ সেকেন্ড সময় লাগে। ধৈর্য ধরুন।</p>
+    </div>
+
+    <!-- প্রগ্রেস বার -->
+    <div class="card prog" id="sec-prog">
+        <h2>⏳ AI কাজ করছে...</h2>
+        <div class="pbar"><div class="pfill" id="pfill"></div></div>
+        <p class="ptxt" id="ptxt">অপেক্ষা করুন...</p>
+    </div>
+
+    <!-- রেজাল্ট সেকশন -->
+    <div class="card" id="sec-result" style="display:none">
+        <h2>✅ সমাধান</h2>
+        <div class="stats" id="stats"></div>
+        <div class="bgrp" id="dl-btns" style="display:none">
+            <button class="bd pdf" onclick="dl('pdf')">📕 PDF ডাউনলোড</button>
+            <button class="bd word" onclick="dl('word')">📘 Word ডাউনলোড</button>
+            <button class="bd html" onclick="dl('html')">📙 HTML ডাউনলোড</button>
+        </div>
+        <div id="results" style="margin-top:12px"></div>
+    </div>
+
+    <div class="ftr">
+        <p>🎓 MCQ সলভার | Gemini + Groq + Together AI</p>
+        <p>স্টুডেন্টদের জন্য সম্পূর্ণ ফ্রি 💚</p>
+    </div>
+  </div>
+  <script>
+let SID=null,MCQs=[];
+const $=id=>document.getElementById(id);
+
+// AI স্ট্যাটাস চেক
+fetch('/api/status').then(r=>r.json()).then(d=>{
+    let s='🤖 ';
+    if(d.gemini) s+='Gemini ✅ ';
+    if(d.groq) s+='Groq ✅ ';
+    if(d.together) s+='Together ✅ ';
+    s+='('+d.total_ai+'টি AI সক্রিয়)';
+    $('ai-stat').textContent=s;
+    $('ai-stat').style.background=d.total_ai>0?'rgba(76,175,80,.3)':'rgba(244,67,54,.3)';
+}).catch(()=>{$('ai-stat').textContent='🤖 স্ট্যাটাস চেক করা যায়নি'});
+
+// ট্যাব সুইচ
+function stab(t){
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+    document.querySelectorAll('.tc').forEach(c=>c.classList.remove('on'));
+    if(t==='txt'){document.querySelectorAll('.tab')[0].classList.add('on');$('t-txt').classList.add('on')}
+    else{document.querySelectorAll('.tab')[1].classList.add('on');$('t-file').classList.add('on')}
+}
+
+// ফাইল সিলেক্ট
+$('f-inp').onchange=function(e){
+    if(e.target.files[0]){
+        const f=e.target.files[0];
+        const size=(f.size/1024/1024).toFixed(2);
+        $('f-name').textContent='✅ '+f.name+' ('+size+' MB)';
+    }
+};
+
+// ড্র্যাগ ড্রপ
+const dz=$('drop-zone');
+dz.ondragover=e=>{e.preventDefault();dz.style.borderColor='#1a237e';dz.style.background='#e8eaf6'};
+dz.ondragleave=()=>{dz.style.borderColor='#c5cae9';dz.style.background='#f8f9ff'};
+dz.ondrop=e=>{e.preventDefault();dz.style.borderColor='#c5cae9';dz.style.background='#f8f9ff';if(e.dataTransfer.files.length>0){$('f-inp').files=e.dataTransfer.files;$('f-name').textContent='✅ '+e.dataTransfer.files[0].name}};
+
+// অ্যালার্ট
+function showA(msg,type){
+    $('alert-box').innerHTML='<div class="alert al-'+type+'">'+msg+'</div>';
+    setTimeout(()=>{$('alert-box').innerHTML=''},7000);
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// প্রগ্রেস
+function showP(t){$('sec-prog').style.display='block';$('ptxt').textContent=t;$('pfill').style.width='10%'}
+function upP(p,t){$('pfill').style.width=p+'%';if(t)$('ptxt').textContent=t}
+function hideP(){setTimeout(()=>{$('sec-prog').style.display='none'},1200)}
+
+// সঠিক উত্তর চেক
+function ck(m,o){
+    const a=(m.correct_answer||'').toLowerCase();
+    const mp={'ক':'ক','খ':'খ','গ':'গ','ঘ':'ঘ','a':'ক','b':'খ','c':'গ','d':'ঘ'};
+    return(mp[a]||a)===o;
+}
+
+// প্রশ্ন এক্সট্রাক্ট
+async function doParse(){
+    const btn=$('btn-parse');
+    btn.disabled=true;btn.innerHTML='<span class="spin"></span> প্রসেসিং...';
+    showP('AI দিয়ে প্রশ্ন এক্সট্রাক্ট হচ্ছে...');
+    try{
+        let res;
+        const active=document.querySelector('.tc.on').id;
+        if(active==='t-txt'){
+            const txt=$('inp-text').value;
+            if(!txt.trim()){showA('⚠️ প্রথমে টেক্সট পেস্ট করুন!','err');return}
+            res=await fetch('/api/parse-text',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:txt})});
+        }else{
+            const f=$('f-inp').files[0];
+            if(!f){showA('⚠️ প্রথমে ফাইল সিলেক্ট করুন!','err');return}
+            const fd=new FormData();fd.append('file',f);
+            res=await fetch('/api/parse-file',{method:'POST',body:fd});
+        }
+        upP(70,'প্রসেসিং...');
+        const data=await res.json();
+        if(data.error){showA('❌ '+data.error,'err');return}
+        SID=data.session_id;MCQs=data.mcqs;
+        upP(100,'সম্পন্ন!');
+        showParsed(data.mcqs);
+        $('sec-hdr').style.display='block';
+        showA('✅ '+data.count+'টি MCQ প্রশ্ন পাওয়া গেছে! নিচে পরীক্ষার তথ্য দিয়ে ব্যাখ্যা তৈরি করুন।','ok');
+    }catch(e){showA('❌ সংযোগ ত্রুটি: '+e.message,'err')}
+    finally{btn.disabled=false;btn.innerHTML='🔍 প্রশ্ন এক্সট্রাক্ট করুন';hideP()}
+}
+
+// পার্স করা প্রশ্ন দেখানো
+function showParsed(mcqs){
+    $('sec-result').style.display='block';
+    $('stats').innerHTML='<div class="st">📊 মোট: <b>'+mcqs.length+'টি</b></div><div class="st">⏳ অবস্থা: <b>ব্যাখ্যা বাকি</b></div>';
+    let h='';
+    mcqs.forEach((m,i)=>{
+        h+='<div class="rc"><span class="rn">প্রশ্ন '+(i+1)+'</span>';
+        h+='<div class="rq">'+m.question+'</div>';
+        h+='<div class="ro '+(ck(m,'ক')?'ok':'')+'">(ক) '+(m.option_a||'')+'</div>';
+        h+='<div class="ro '+(ck(m,'খ')?'ok':'')+'">(খ) '+(m.option_b||'')+'</div>';
+        h+='<div class="ro '+(ck(m,'গ')?'ok':'')+'">(গ) '+(m.option_c||'')+'</div>';
+        h+='<div class="ro '+(ck(m,'ঘ')?'ok':'')+'">(ঘ) '+(m.option_d||'')+'</div>';
+        h+='<div class="ra">✅ ('+m.correct_answer+') '+(m.correct_option_text||'')+'</div></div>';
+    });
+    $('results').innerHTML=h;
+    $('sec-result').scrollIntoView({behavior:'smooth'});
+}
+
+// AI ব্যাখ্যা তৈরি
+async function doExplain(){
+    if(!SID){showA('⚠️ আগে প্রশ্ন এক্সট্রাক্ট করুন!','err');return}
+    const btn=$('btn-explain');
+    btn.disabled=true;btn.innerHTML='<span class="spin"></span> AI ব্যাখ্যা তৈরি হচ্ছে...';
+    showP('৩টি AI থেকে ব্যাখ্যা সংগ্রহ হচ্ছে...');
+    let p=0;const tot=MCQs.length;
+    const iv=setInterval(()=>{p+=100/tot/4;if(p>95)p=95;upP(p,'প্রশ্ন '+Math.min(Math.ceil(p*tot/100),tot)+'/'+tot+' প্রসেস হচ্ছে...')},3000);
+    try{
+        const hdr={
+            institution:$('h-inst').value,
+            exam_name:$('h-exam').value,
+            year:$('h-year').value,
+            total_marks:$('h-marks').value,
+            duration:$('h-time').value,
+            negative_marking:$('h-neg').value,
+            instructions:$('h-inst2').value
+        };
+        const res=await fetch('/api/explain',{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({session_id:SID,subject:$('subj').value,header_info:hdr})});
+        clearInterval(iv);upP(100,'সম্পন্ন!');
+        const data=await res.json();
+        if(data.error){showA('❌ '+data.error,'err');return}
+        MCQs=data.mcqs;
+        showExplained(data.mcqs);
+        $('dl-btns').style.display='flex';
+        showA('✅ '+data.count+'টি প্রশ্নের ব্যাখ্যা তৈরি হয়েছে! এখন PDF/Word/HTML ডাউনলোড করতে পারবেন।','ok');
+    }catch(e){clearInterval(iv);showA('❌ '+e.message,'err')}
+    finally{btn.disabled=false;btn.innerHTML='🤖 AI দিয়ে ব্যাখ্যা তৈরি করুন';hideP()}
+}
+
+// ব্যাখ্যাসহ রেজাল্ট
+function showExplained(mcqs){
+    $('stats').innerHTML='<div class="st">📊 <b>'+mcqs.length+'টি প্রশ্ন</b></div><div class="st">✅ <b>ব্যাখ্যা সম্পন্ন</b></div><div class="st">📥 <b>ডাউনলোড রেডি</b></div>';
+    let h='';
+    mcqs.forEach((m,i)=>{
+        const srcs=(m.sources||[]).join(', ')||'N/A';
+        h+='<div class="rc"><span class="rn">প্রশ্ন '+(i+1)+'</span>';
+        h+='<div class="rq">'+m.question+'</div>';
+        h+='<div class="ro '+(ck(m,'ক')?'ok':'')+'">(ক) '+(m.option_a||'')+'</div>';
+        h+='<div class="ro '+(ck(m,'খ')?'ok':'')+'">(খ) '+(m.option_b||'')+'</div>';
+        h+='<div class="ro '+(ck(m,'গ')?'ok':'')+'">(গ) '+(m.option_c||'')+'</div>';
+        h+='<div class="ro '+(ck(m,'ঘ')?'ok':'')+'">(ঘ) '+(m.option_d||'')+'</div>';
+        h+='<div class="ra">✅ ('+m.correct_answer+') '+(m.correct_option_text||'')+'</div>';
+        h+='<div class="re"><b>📖 ব্যাখ্যা:</b><p>'+(m.explanation||'ব্যাখ্যা পাওয়া যায়নি')+'</p>';
+        h+='<div class="rs"><b>📚 তথ্যসূত্র:</b> ['+srcs+']</div></div></div>';
+    });
+    $('results').innerHTML=h;
+    $('sec-result').scrollIntoView({behavior:'smooth'});
+}
+
+// ডাউনলোড
+async function dl(fmt){
+    if(!SID){showA('⚠️ আগে ব্যাখ্যা তৈরি করুন!','err');return}
+    try{
+        showA('⏳ '+fmt.toUpperCase()+' ফাইল তৈরি হচ্ছে...','info');
+        const res=await fetch('/api/export/'+fmt,{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({session_id:SID})});
+        if(!res.ok){const e=await res.json();showA('❌ '+e.error,'err');return}
+        const blob=await res.blob();
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=url;
+        const ext=fmt==='word'?'docx':(fmt==='pdf'?'html':'html');
+        a.download='mcq_solution.'+ext;
+        document.body.appendChild(a);a.click();
+        document.body.removeChild(a);URL.revokeObjectURL(url);
+        if(fmt==='pdf'){
+            showA('💡 PDF করতে: ডাউনলোড হওয়া HTML ফাইল খুলুন → ⋮ মেনু → Share → Print → Save as PDF','info');
+        }else{
+            showA('✅ ফাইল ডাউনলোড হয়েছে!','ok');
+        }
+    }catch(e){showA('❌ ডাউনলোড ত্রুটি: '+e.message,'err')}
+}
+</script>
+</body>
+</html>
